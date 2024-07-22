@@ -8,6 +8,7 @@ import numpy as np
 import os
 import uuid
 import logging
+import traceback
 
 # Configure logging to write to a file
 logging.basicConfig(filename='app.log', level=logging.DEBUG,
@@ -129,6 +130,7 @@ def generate_video():
 
     except Exception as e:
         app.logger.error(f'Failed to generate video: {str(e)}')
+        app.logger.error(traceback.format_exc())
         return jsonify({"error": "Failed to generate video"}), 500
 
 if __name__ == "__main__":
