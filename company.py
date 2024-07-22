@@ -9,7 +9,6 @@ import os
 import uuid
 import logging
 
-
 # Configure logging to write to a file
 logging.basicConfig(filename='app.log', level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -110,26 +109,27 @@ def generate_video():
         app.logger.error('Text parameter is missing')
         return jsonify({"error": "Text parameter is required"}), 400
 
-    # Save the text to a temporary file
-    text_filename = f"{uuid.uuid4()}.txt"
-    with open(text_filename, "w") as f:
-        f.write(text)
+    try:
+        # Save the text to a temporary file
+        text_filename = f"{uuid.uuid4()}.txt"
+        with open(text_filename, "w") as f:
+            f.write(text)
 
-    # Generate a unique output file name
-    output_filename = outputfile = 'output.mp4'
+        # Generate a unique output file name
+        output_filename = 'output.mp4'
 
-    # Call the text_to_video function
-    text_to_video(text_filename, output_filename)
+        # Call the text_to_video function
+        text_to_video(text_filename, output_filename)
 
-    # Remove the temporary text file
-    os.remove(text_filename)
+        # Remove the temporary text file
+        os.remove(text_filename)
 
-    # Send the generated video file
-    return send_file(output_filename, mimetype='video/mp4', as_attachment=True, download_name=output_filename)
+        # Send the generated video file
+        return send_file(output_filename, mimetype='video/mp4', as_attachment=True, download_name=output_filename)
 
-except Exception as e:
-    app.logger.error(f'Failed to generate video: {str(e)}')
-    return jsonify({"error": "Failed to generate video"}), 500
+    except Exception as e:
+        app.logger.error(f'Failed to generate video: {str(e)}')
+        return jsonify({"error": "Failed to generate video"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
